@@ -67,6 +67,7 @@ project(SAMU)
 
 # Amminadab
 add_definitions(-DLZW_TREE)
+add_definitions(-DFEELINGS)
   
 # Ram
 add_definitions(-DINCREMENTAL_CACHE)
@@ -96,7 +97,7 @@ add_definitions(-DQNN_DEBUG)
 #add_definitions(-DRND_DEBUG)
 #add_definitions(-DNN_DEBUG)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread -O3 -lm")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -lm -lboost_system -lpthread -lboost_thread")
 
 if(${CUDA_LAYERS})
   add_definitions(-DCUDA_PRCPS)
@@ -118,6 +119,8 @@ if (OPENMP_FOUND)
 endif()
 
 find_package( Boost COMPONENTS date_time REQUIRED )  
+find_package( Boost COMPONENTS system REQUIRED )  
+find_package( Boost COMPONENTS system thread REQUIRED )  
 
 include_directories( ${Boost_INCLUDE_DIRS} ) 
 link_directories( ${Boost_LIBRARY_DIRS} )  
@@ -136,9 +139,9 @@ include_directories(${LINK_GRAMMAR_INCLUDE_DIRS})
 
 if (CUDA_FOUND)
   cuda_compile(CUDASRCS qlc.cu)
-  cuda_add_executable(samu ${CUDASRCS} nlp.hpp nlp.cpp qlc.h ql.hpp samu.hpp samu.cpp main.cpp disp.hpp )
+  cuda_add_executable(samu ${CUDASRCS} nlp.hpp nlp.cpp qlc.h ql.hpp samu.hpp samu.cpp main.cpp disp.hpp tcpserver.cpp)
 else()
-  add_executable(samu nlp.hpp nlp.cpp ql.hpp samu.hpp samu.cpp main.cpp  )
+  add_executable(samu nlp.hpp nlp.cpp ql.hpp samu.hpp samu.cpp main.cpp tcpserver.cpp )
 endif()
 
 target_link_libraries(samu ${LINK_GRAMMAR_LIBRARIES} ${PNGwriter_LIBRARIES} ${Boost_LIBRARIES} ${CURSES_LIBRARIES})

@@ -86,7 +86,7 @@ void Samu::FamilyCaregiverShell ( void )
             {
               if ( !sleep_ )
                 {
-                  std::cerr << "Isaac went to sleep." << std::endl;
+                  std::cerr << Samu::name << " went to sleep." << std::endl;
                   disp.log ( "I went to sleep." );
                 }
               sleep_ = true;
