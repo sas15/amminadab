@@ -98,7 +98,7 @@ add_definitions(-DQNN_DEBUG)
 #add_definitions(-DRND_DEBUG)
 #add_definitions(-DNN_DEBUG)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -lm -lpthread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -lm -lpthread -lboost_thread -lboost_system")
 
 if(${CUDA_LAYERS})
   add_definitions(-DCUDA_PRCPS)
@@ -138,7 +138,7 @@ include_directories(${LINK_GRAMMAR_INCLUDE_DIRS})
 
 if (CUDA_FOUND)
   cuda_compile(CUDASRCS qlc.cu)
-  cuda_add_executable(samu ${CUDASRCS} nlp.hpp nlp.cpp qlc.h ql.hpp samu.hpp samu.cpp main.cpp disp.hpp tcpserver.hpp tcpserver.cpp)
+  cuda_add_executable(samu ${CUDASRCS} nlp.hpp nlp.cpp qlc.h ql.hpp samu.hpp samu.cpp main.cpp disp.hpp tcpserver.cpp)
 else()
   add_executable(samu nlp.hpp nlp.cpp ql.hpp samu.hpp samu.cpp main.cpp tcpserver.cpp )
 endif()
