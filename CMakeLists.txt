@@ -26,24 +26,24 @@
  #
  # JACOB, https://github.com/nbatfai/jacob
  #
- # "The son of Isaac is Jacob." The project called Jacob is an experiment 
+ # "The son of Isaac is Jacob." The project called Jacob is an experiment
  # to replace Isaac's (GUI based) visual imagination with a character console.
  #
  # ISAAC, https://github.com/nbatfai/isaac
  #
- # "The son of Samu is Isaac." The project called Isaac is a case study 
- # of using deep Q learning with neural networks for predicting the next 
+ # "The son of Samu is Isaac." The project called Isaac is a case study
+ # of using deep Q learning with neural networks for predicting the next
  # sentence of a conversation.
- # 
+ #
  # SAMU, https://github.com/nbatfai/samu
  #
- # The main purpose of this project is to allow the evaluation and 
- # verification of the results of the paper entitled "A disembodied 
- # developmental robotic agent called Samu Bátfai". It is our hope 
- # that Samu will be the ancestor of developmental robotics chatter 
+ # The main purpose of this project is to allow the evaluation and
+ # verification of the results of the paper entitled "A disembodied
+ # developmental robotic agent called Samu Bátfai". It is our hope
+ # that Samu will be the ancestor of developmental robotics chatter
  # bots that will be able to chat in natural language like humans do.
- # 
- 
+ #
+
 cmake_minimum_required(VERSION 2.8.5)
 project(SAMU)
 
@@ -58,7 +58,7 @@ project(SAMU)
 
 # TUI
  #add_definitions(-DSUPER_OR_REMOTE_COMP)
- 
+
  #set(CUDA_LAYERS ON)
  set(CUDA_LAYERS OFF)
 
@@ -69,7 +69,7 @@ project(SAMU)
 add_definitions(-DLZW_TREE)
 add_definitions(-DFEELINGS)
 add_definitions(-DTCP_SERVER)
-  
+
 # Ram
 add_definitions(-DINCREMENTAL_CACHE)
 add_definitions(-DCELL_AUTOMATA)
@@ -80,14 +80,14 @@ add_definitions(-DCELL_AUTOMATA)
 #add_definitions(-DPRINTING_CHARBYCHAR)
 add_definitions(-DSARSA)
 
-# Hezron 
+# Hezron
 # add_definitions(-DPYRAMID_VI)
 # add_definitions(-DJUSTIFY_VI)
 
-# Judah 
+# Judah
 add_definitions(-DTRIPLET_CACHE)
 
-# Jacob 
+# Jacob
 add_definitions(-DCHARACTER_CONSOLE)
 
 # uncomment to use Q lookup table (for test purposes only)
@@ -98,12 +98,12 @@ add_definitions(-DQNN_DEBUG)
 #add_definitions(-DRND_DEBUG)
 #add_definitions(-DNN_DEBUG)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -lm -lboost_system -lpthread -lboost_thread")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -lm -lpthread")
 
 if(${CUDA_LAYERS})
   add_definitions(-DCUDA_PRCPS)
   find_package(CUDA REQUIRED)
-  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -std=c++11 
+  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-O3 -std=c++11
   -gencode arch=compute_30,code=sm_30)
 endif()
 
@@ -119,12 +119,10 @@ if (OPENMP_FOUND)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-find_package( Boost COMPONENTS date_time REQUIRED )  
-find_package( Boost COMPONENTS system REQUIRED )  
-find_package( Boost COMPONENTS system thread REQUIRED )  
+find_package( Boost COMPONENTS date_time system thread REQUIRED )
 
-include_directories( ${Boost_INCLUDE_DIRS} ) 
-link_directories( ${Boost_LIBRARY_DIRS} )  
+include_directories( ${Boost_INCLUDE_DIRS} )
+link_directories( ${Boost_LIBRARY_DIRS} )
 
 include(FindPNGwriter.cmake)
 
@@ -140,7 +138,7 @@ include_directories(${LINK_GRAMMAR_INCLUDE_DIRS})
 
 if (CUDA_FOUND)
   cuda_compile(CUDASRCS qlc.cu)
-  cuda_add_executable(samu ${CUDASRCS} nlp.hpp nlp.cpp qlc.h ql.hpp samu.hpp samu.cpp main.cpp disp.hpp tcpserver.cpp)
+  cuda_add_executable(samu ${CUDASRCS} nlp.hpp nlp.cpp qlc.h ql.hpp samu.hpp samu.cpp main.cpp disp.hpp tcpserver.hpp tcpserver.cpp)
 else()
   add_executable(samu nlp.hpp nlp.cpp ql.hpp samu.hpp samu.cpp main.cpp tcpserver.cpp )
 endif()
