@@ -98,7 +98,7 @@ add_definitions(-DQNN_DEBUG)
 #add_definitions(-DRND_DEBUG)
 #add_definitions(-DNN_DEBUG)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -lm -lpthread -lboost_thread -lboost_system")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -lm -lpthread")
 
 if(${CUDA_LAYERS})
   add_definitions(-DCUDA_PRCPS)

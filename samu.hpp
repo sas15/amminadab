@@ -88,6 +88,10 @@ class Samu
 public:
 
   Samu()
+#ifdef TCP_SERVER
+   :
+     tcpserver(Tcpserver::start_server(this, 50013))
+#endif
   {
     cv_.notify_one();
   }
@@ -303,9 +307,9 @@ public:
   {
     vi.debug_tree ( );
   }
-  
+
 #ifdef DISP_CURSES
-  static void print_console (std::string msg) 
+  static void print_console (std::string msg)
   {
     disp.log(msg.c_str());
   }
@@ -695,7 +699,7 @@ private:
     {
       return ql.get_min_reward();
     }
-    
+
   private:
 
     int nrows = 10;
@@ -715,7 +719,7 @@ private:
   static Disp disp;
 #endif
 #ifdef TCP_SERVER
-  static Tcpserver tcpserver = Tcpserver::start_server(*this, 50013);
+  Tcpserver tcpserver;
 #endif
   static std::string name;
 
@@ -740,5 +744,3 @@ private:
 };
 
 #endif
-
-
