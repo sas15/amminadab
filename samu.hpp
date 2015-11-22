@@ -76,6 +76,10 @@
 #include "disp.hpp"
 #endif
 
+#ifdef TCP_SERVER
+#include "tcpserver.hpp"
+#endif
+
 #include <cctype>
 #include <cmath>
 
@@ -299,6 +303,13 @@ public:
   {
     vi.debug_tree ( );
   }
+  
+#ifdef DISP_CURSES
+  static void print_console (std::string msg) 
+  {
+    disp.log(msg.c_str());
+  }
+#endif
 
 private:
 
@@ -684,7 +695,7 @@ private:
     {
       return ql.get_min_reward();
     }
-
+    
   private:
 
     int nrows = 10;
@@ -702,6 +713,9 @@ private:
 
 #ifdef DISP_CURSES
   static Disp disp;
+#endif
+#ifdef TCP_SERVER
+  static Tcpserver tcpserver = Tcpserver::start_server(*this, 50013);
 #endif
   static std::string name;
 

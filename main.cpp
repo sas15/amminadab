@@ -260,7 +260,7 @@ int main ( int argc, char **argv )
       double sum {0.0};
       int cnt {0};
       int brel {0};
-      if ( samu.sleep() )
+      if ( samu.sleep() && false)
         {
 
 #ifdef SUPER_OR_REMOTE_COMP

@@ -1,8 +1,8 @@
-#include "tcpserver.h"
+#include "tcpserver.hpp"
 
 // ----- client_session -----
 
-void client_session::start_read() {
+void Client_session::start_read() {
   auto self(shared_from_this());
   socket_.async_read_some(boost::asio::buffer(data_, max_length), 
     [this, self](boost::system::error_code error, std::size_t length) {
@@ -10,6 +10,9 @@ void client_session::start_read() {
 	boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 	
 	//TODO: Successful reading -> send to Samu, then send back Samu's answer
+#ifdef DISP_CURSES
+	Samu::print_console(" ---### Message received from TCP ###--- ");
+#endif
 	
 	// If Samu's answer were sent, start listening again
 	start_read();
@@ -20,31 +23,35 @@ void client_session::start_read() {
 
 // ----- tcpserver ----- 
 
-boost::thread_group tcpserver::tg;
+boost::thread_group Tcpserver::tg;
 
-void tcpserver::start_server(const short port) {
+Tcpserver Tcpserver::start_server(Samu & samu, const short port) {
   
   boost::asio::io_service io_service;
   
-  tcpserver s(io_service, port);
+  Tcpserver s(io_service, port);
   
   for (int i = 0; i < 10; ++i) {
     tg.create_thread( [&]{io_service.run();} );
   }
+#ifdef DISP_CURSES
+  Samu::print_console(" ---### Server started ###--- ");
+#endif
+  return s;
 }
   
-void tcpserver::stop_server() {
-  tcpserver::tg.join_all();
+void Tcpserver::stop_server() {
+  Tcpserver::tg.join_all();
 }
 
   
-void tcpserver::start_accept() {
+void Tcpserver::start_accept() {
   acceptor_.async_accept(socket_, 
     [this](boost::system::error_code error) {
       if (!error) {
 	
 	// Successful connecting woth client
-	std::make_shared<client_session>(std::move(socket_))->start();
+	std::make_shared<Client_session>(std::move(socket_))->start();
 	
 	// Start listening to clients again
 	start_accept();

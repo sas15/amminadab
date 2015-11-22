@@ -61,6 +61,7 @@ std::string Samu::name {"Amminadab"};
 #ifdef DISP_CURSES
 Disp Samu::disp;
 
+
 void Samu::FamilyCaregiverShell ( void )
 {
   std::string cmd_prefix = "cmd";
@@ -116,7 +117,7 @@ void Samu::FamilyCaregiverShell ( void )
 
           if ( sleep_ )
             {
-              std::cerr << "Isaac is awake now." << std::endl;
+              std::cerr << Samu::name << " is awake now." << std::endl;
               disp.log ( "I am awake now." );
             }
           sleep_ = false;
