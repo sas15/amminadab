@@ -90,7 +90,7 @@ public:
   Samu()
 #ifdef TCP_SERVER
    :
-     tcpserver(Tcpserver::start_server(this, 50013))
+     tcpserver(*this, 50013)
 #endif
   {
     cv_.notify_one();

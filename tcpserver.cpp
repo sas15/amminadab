@@ -1,9 +1,5 @@
 #include "tcpserver.hpp"
 
-namespace {
-  boost::thread_group tg;
-  boost::asio::io_service io_service;
-}
 // ----- client_session -----
 
 void Client_session::start_read() {
@@ -25,29 +21,29 @@ void Client_session::start_read() {
 }
 
 // ----- tcpserver -----
-void ThreadMain()
-{
-  io_service.run();
-}
-Tcpserver &&Tcpserver::start_server(const Samu *samu, const short port) {
 
-
+Tcpserver::Tcpserver(const Samu &samu, const short port) : io_service(),
+                                                socket_(io_service),
+                                                acceptor_(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
+                                                 {
+  start_accept() ;
   boost::asio::io_service::work work(io_service);
-  Tcpserver s(io_service, port);
 
   for (int i = 0; i < 10; ++i) {
-    tg.create_thread( boost::bind(&ThreadMain) );
+    tg.create_thread(
+              [&](){
+                io_service.run();
+              }
+        );
   }
-#ifdef DISP_CURSES
-  Samu::print_console(" ---### Server started ###--- ");
-#endif
-  return std::move(s);
+  #ifdef DISP_CURSES
+  samu.print_console(" ---### Server started ###--- ");
+  #endif
 }
 
 void Tcpserver::stop_server() {
   tg.join_all();
 }
-
 
 void Tcpserver::start_accept() {
   acceptor_.async_accept(socket_,

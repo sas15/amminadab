@@ -24,16 +24,15 @@ private:
 
 class Tcpserver {
 public:
-  Tcpserver(boost::asio::io_service & io_service, const short port):socket_(io_service),acceptor_(io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)) {
-    start_accept() ;
-  }
   Tcpserver(Tcpserver&&c) : socket_(std::move(c.socket_)), acceptor_(std::move(c.acceptor_)) {}
-  static Tcpserver&& start_server(const Samu *samu, const short port);
-  static void stop_server();
+  Tcpserver(const Samu &samu, const short port);
+  void stop_server();
 
 private:
   void start_accept();
 
+  boost::thread_group tg;
+  boost::asio::io_service io_service;
   boost::asio::ip::tcp::socket socket_;
   boost::asio::ip::tcp::acceptor acceptor_;
 };
