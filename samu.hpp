@@ -175,6 +175,22 @@ public:
 
   }
 
+
+  std::string SamuWorkWithThis ( int id, std::string & sentence )
+  {
+        msg_mutex.lock();
+
+        if ( id != old_talk_id )
+          clear_vi();
+
+        old_talk_id = id;
+        std::stringstream ss;
+        ss << vi.SamuWorkWithThis(nlp.sentence2triplets ( sentence.c_str() ));
+
+        msg_mutex.unlock();
+        return ss.str();
+  }
+
   void sentence ( int id, std::string & sentence )
   {
     if ( msg_mutex.try_lock() )
@@ -347,10 +363,13 @@ private:
 
     void operator<< ( std::vector<SPOTriplet> triplets )
     {
+        SamuWorkWithThis(triplets);
+    }
 
-      if ( !triplets.size() )
-        return;
+    SPOTriplet SamuWorkWithThis( std::vector<SPOTriplet> triplets)
+    {
 
+      if (triplets.size() ){
       for ( auto triplet : triplets )
         {
           if ( program.size() >= stmt_max )
@@ -638,6 +657,8 @@ private:
 #endif
 
 #endif
+      return response;
+    }
     }
 
     double reward ( void )
