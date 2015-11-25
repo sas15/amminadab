@@ -184,16 +184,13 @@ public:
           clear_vi();
 
         old_talk_id = id;
-        std::stringstream ss;
-        SPOTriplet retTrip;
-        retTrip = vi.SamuWorkWithThis(nlp.sentence2triplets ( sentence.c_str() ));
+        std::string ret;
+        ret = vi.SamuWorkWithThis(nlp.sentence2triplets ( sentence.c_str() ));
 
         msg_mutex.unlock();
-        if(!retTrip.empty())
-          ss << retTrip;
-        else
-          ss << "I don't know what to say.";
-        return ss.str();
+        if(!ret.size())
+          ret = "I don't know what to say.";
+        return ret;
   }
 
   void sentence ( int id, std::string & sentence )
@@ -372,7 +369,7 @@ private:
           SamuWorkWithThis(triplets);
     }
 
-    SPOTriplet SamuWorkWithThis( std::vector<SPOTriplet> triplets)
+    std::string SamuWorkWithThis( std::vector<SPOTriplet> triplets)
     {
 
       if (triplets.size()>0){
@@ -619,6 +616,7 @@ private:
       SPOTriplet response = ql ( triplets[0], prg, img_input );
 
       std::stringstream resp;
+      std::stringstream resp_tcp;
 
       resp << samu.name
 #ifdef QNN_DEBUG
@@ -633,6 +631,8 @@ private:
            <<"> "
            << response;
 
+
+      resp_tcp << response;
       std::string r = resp.str();
 
       std::cerr << r << std::endl;
@@ -665,7 +665,7 @@ private:
 #endif
 
 #endif
-      return response;
+      return resp_tcp.str();
     }
     }
 
