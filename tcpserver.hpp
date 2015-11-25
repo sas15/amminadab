@@ -10,7 +10,7 @@
 
 class Samu;
 
-class Client_session {
+class Client_session : public std::enable_shared_from_this<Client_session>{
 public:
   Client_session(boost::asio::ip::tcp::socket socket, Samu &SAMU):socket_(std::move(socket)),samu(SAMU){}
   void start() { start_read(); }

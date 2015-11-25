@@ -7,34 +7,47 @@
 
 
 void Client_session::start_read() {
+  std::shared_ptr<Client_session> self(shared_from_this());
   socket_.async_read_some(boost::asio::buffer(data_, max_length),
-    [this](boost::system::error_code error, std::size_t length) {
+    [this, self](boost::system::error_code error, std::size_t length) {
       if (!error) {
       	boost::this_thread::sleep(boost::posix_time::milliseconds(100));
         std::string gotstr(std::begin(data_), std::begin(data_)+length);
-        //TODO: maybe id
+      #ifdef DISP_CURSES
+      	samu.print_console(" ---### Message received from TCP ###--- ");
+	samu.print_console(gotstr);
+      #endif
+        
+	//TODO: maybe id
         std::string response = samu.SamuWorkWithThis(1, gotstr);
-        std::array<char, max_length> resp_data;
-
+	
         if(response.size() < max_length){
-          std::copy(response.begin(), response.end(), resp_data.begin());
+          std::copy(response.begin(), response.end(), data_.begin());
         }else{
-          std::copy(response.begin(), response.begin()+max_length, resp_data.begin());
+          std::copy(response.begin(), response.begin()+max_length, data_.begin());
         }
 
       	//TODO: Successful reading -> send to Samu, then send back Samu's answer
-      #ifdef DISP_CURSES
-      	samu.print_console(" ---### Message received from TCP ###--- ");
-      #endif
       	// If Samu's answer were sent, start listening again
-
-        boost::asio::async_write(socket_,
-          boost::asio::buffer(resp_data, (response.size() < max_length ? response.size() : max_length)),
-            [this](boost::system::error_code error, std::size_t length) {
-              start_read();
-            }
-          );
-      	//start_read();
+	boost::system::error_code wr_error;
+        socket_.write_some(boost::asio::buffer(data_, response.size()), wr_error);
+            
+	if (!wr_error) {
+	  start_read();
+	}
+	else {
+	#ifdef DISP_CURSES
+	  samu.print_console(" ---### Answer sendback failure ###--- ");
+	#endif
+	  //TODO: Write error handling?
+	  start_read();
+	}
+            
+      }
+      else {
+	samu.print_console(" ---### Read error ###--- ");
+	samu.print_console(error.message());
+	
       }
     }
   );
@@ -72,9 +85,9 @@ void Tcpserver::start_accept() {
       if (!error) {
 
       	// Successful connecting woth client
-
-        Client_session client_session(std::move(socket_), samu);
-        client_session.start();
+	std::make_shared<Client_session>(Client_session(std::move(socket_), samu))->start();
+//         Client_session client_session(std::move(socket_), samu);
+//         client_session.start();
 
       	// Start listening to clients again
       	start_accept();
