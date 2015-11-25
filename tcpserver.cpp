@@ -11,11 +11,14 @@ void Client_session::start_read() {
     [this](boost::system::error_code error, std::size_t length) {
       if (!error) {
       	boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+        //sztringgé alakítja a kapott adatot
         std::string gotstr(std::begin(data_), std::begin(data_)+length);
+        //samu feldolgozza
         //TODO: maybe id
         std::string response = samu.SamuWorkWithThis(1, gotstr);
+        //küldendő array
         std::array<char, max_length> resp_data;
-
+        //a küldendő arrayba a válasz sztringet
         if(response.size() < max_length){
           std::copy(response.begin(), response.end(), resp_data.begin());
         }else{
@@ -28,10 +31,13 @@ void Client_session::start_read() {
       #endif
       	// If Samu's answer were sent, start listening again
 
+        //küldés
         boost::asio::async_write(socket_,
           boost::asio::buffer(resp_data, (response.size() < max_length ? response.size() : max_length)),
             [this](boost::system::error_code error, std::size_t length) {
-              start_read();
+              //újrakezdés
+              if(!error)
+                start_read();
             }
           );
       	//start_read();
