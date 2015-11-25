@@ -185,9 +185,14 @@ public:
 
         old_talk_id = id;
         std::stringstream ss;
-        ss << vi.SamuWorkWithThis(nlp.sentence2triplets ( sentence.c_str() ));
+        SPOTriplet retTrip;
+        retTrip = vi.SamuWorkWithThis(nlp.sentence2triplets ( sentence.c_str() ));
 
         msg_mutex.unlock();
+        if(!retTrip.empty())
+          ss << retTrip;
+        else
+          ss << "I don't know what to say.";
         return ss.str();
   }
 
@@ -363,19 +368,22 @@ private:
 
     void operator<< ( std::vector<SPOTriplet> triplets )
     {
-        SamuWorkWithThis(triplets);
+        if(triplets.size())
+          SamuWorkWithThis(triplets);
     }
 
     SPOTriplet SamuWorkWithThis( std::vector<SPOTriplet> triplets)
     {
 
-      if (triplets.size() ){
+      if (triplets.size()>0){
       for ( auto triplet : triplets )
         {
-          if ( program.size() >= stmt_max )
-            program.pop();
+            if(!triplet.empty()){
+            if ( program.size() >= stmt_max )
+              program.pop();
 
-          program.push ( triplet );
+            program.push ( triplet );
+          }
         }
 
 #ifdef FEELINGS
