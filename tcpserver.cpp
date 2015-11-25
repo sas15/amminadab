@@ -12,7 +12,9 @@ void Client_session::start_read() {
     [this, self](boost::system::error_code error, std::size_t length) {
       if (!error) {
       	boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+        //sztringgé alakítja a kapott adatot
         std::string gotstr(std::begin(data_), std::begin(data_)+length);
+	
       #ifdef DISP_CURSES
       	samu.print_console(" ---### Message received from TCP ###--- ");
 	samu.print_console(gotstr);
@@ -29,6 +31,7 @@ void Client_session::start_read() {
 
       	//TODO: Successful reading -> send to Samu, then send back Samu's answer
       	// If Samu's answer were sent, start listening again
+      	
 	boost::system::error_code wr_error;
         socket_.write_some(boost::asio::buffer(data_, response.size()), wr_error);
             
@@ -47,7 +50,7 @@ void Client_session::start_read() {
       else {
 	samu.print_console(" ---### Read error ###--- ");
 	samu.print_console(error.message());
-	
+
       }
     }
   );
