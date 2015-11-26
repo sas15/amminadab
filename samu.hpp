@@ -178,8 +178,8 @@ public:
 
   std::string SamuWorkWithThis ( int id, std::string & sentence )
   {
-        msg_mutex.lock();
-
+    if (msg_mutex.try_lock()) {
+      
         if ( id != old_talk_id )
           clear_vi();
 
@@ -188,9 +188,18 @@ public:
         ret = vi.SamuWorkWithThis(nlp.sentence2triplets ( sentence.c_str() ));
 
         msg_mutex.unlock();
+
         if(!ret.size())
           ret = "I don't know what to say.";
         return ret;
+
+        
+    }
+    else {
+	return "My attention diverted elsewhere.";
+    }
+
+
   }
 
   void sentence ( int id, std::string & sentence )
