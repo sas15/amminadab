@@ -9,36 +9,40 @@
 void Client_session::start_read() {
   std::shared_ptr<Client_session> self(shared_from_this());
   boost::system::error_code err;
+  boost::system::error_code wr_error;
   std::string response;
   for(;;){
+    
     std::size_t length = socket_.read_some(boost::asio::buffer(data_, max_length), err);
-    if(err)
-      break;
-    std::string gotstr(std::begin(data_), length-2);
-
+    
+    if(err) {
     #ifdef DISP_CURSES
-      samu.print_console(" ---### Message received from TCP ###--- ");
-      samu.print_console(gotstr);
+      samu.print_console(" ---### Read failure ###--- ");
+      samu.print_console(err.message());
     #endif
+      //break;
+    }
+    
+    std::string gotstr(std::begin(data_), length);
+
+  #ifdef DISP_CURSES
+    samu.print_console(" ---### Message received from TCP ###--- ");
+    samu.print_console(gotstr);
+  #endif
 
     //TODO: maybe id
-      response = samu.SamuWorkWithThis(1, gotstr);
+    response = samu.SamuWorkWithThis(1, gotstr);
 
-      //TODO: Successful reading -> send to Samu, then send back Samu's answer
-      // If Samu's answer were sent, start listening again
-
-    boost::system::error_code wr_error;
-      socket_.write_some(boost::asio::buffer(response.c_str(), response.size()), wr_error);
+    socket_.write_some(boost::asio::buffer(response.c_str(), response.size()), wr_error);  
 
     if (wr_error) {
-      break;
-    }
-    else {
     #ifdef DISP_CURSES
       samu.print_console(" ---### Answer sendback failure ###--- ");
+      samu.print_console(wr_error.message());
     #endif
-
+      //break;
     }
+    
   }
 }
 
