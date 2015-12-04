@@ -20,7 +20,7 @@ void Client_session::start_read() {
       samu.print_console(" ---### Read failure ###--- ");
       samu.print_console(err.message());
     #endif
-      //break;
+      break;
     }
     
     std::string gotstr(std::begin(data_), length);
